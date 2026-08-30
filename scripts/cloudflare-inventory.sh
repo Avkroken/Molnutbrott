@@ -18,7 +18,7 @@ mkdir -p "$OUT_DIR"
 
 INSPECTOR=(
   npx -y @modelcontextprotocol/inspector --cli
-  "$MCP_URL"
+  --server-url "$MCP_URL"
   --transport http
   --format json
   --use-stored-auth
