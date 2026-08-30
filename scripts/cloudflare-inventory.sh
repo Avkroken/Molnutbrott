@@ -18,10 +18,9 @@ mkdir -p "$OUT_DIR"
 
 INSPECTOR=(
   npx -y @modelcontextprotocol/inspector --cli
-  --server-url "$MCP_URL"
-  --transport http
+  npx -y mcp-remote "$MCP_URL" --transport http-only
+  --
   --format json
-  --use-stored-auth
 )
 
 mcp_call() {
@@ -38,7 +37,24 @@ portal_text() {
 }
 
 unwrap_execute() {
-  portal_text | jq -r 'fromjson | .[]? | select(.type == "text") | .text' | jq .
+  jq '
+    def parse_json:
+      if type == "string" then
+        . as $s | try ($s | fromjson) catch $s
+      else . end;
+    [
+      .result.content[]?
+      | select(.type == "text")
+      | .text
+      | parse_json
+      | if type == "array" then .[] else . end
+      | if type == "object" and .type? == "text" and has("text")
+        then .text | parse_json
+        else .
+        end
+    ]
+    | if length == 1 then .[0] else . end
+  '
 }
 
 redact() {
