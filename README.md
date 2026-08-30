@@ -24,6 +24,36 @@ The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and i
 
 The upstream has Code Mode disabled intentionally because Code Mode is enforced at the portal layer.
 
+## Read-only Cloudflare inventory
+
+`scripts/cloudflare-inventory.sh` uses the MCP portal through the MCP Inspector CLI and only invokes discovered Cloudflare `GET` tools. It does not create, update, or delete Cloudflare resources.
+
+Requirements:
+
+- Node.js 22.19 or newer
+- `npx`
+- `jq`
+- a previously authorized Inspector OAuth session for `https://mcp.denied.se/mcp`
+
+Inventory Skvallerbyttan:
+
+```sh
+bash scripts/cloudflare-inventory.sh skvallerbyttan denied.se
+```
+
+The script writes sanitized JSON under `inventory/`, which is ignored by Git. It inventories the target Worker plus Worker settings/bindings, workers.dev and preview status, cron schedules, deployments, custom domains/routes, Workers Builds triggers/history, and account-level D1/KV/R2/Queues metadata. Secret-like values are redacted before the review files are written.
+
+If Inspector authentication has expired, authorize it once with:
+
+```sh
+npx -y @modelcontextprotocol/inspector --cli \
+  https://mcp.denied.se/mcp \
+  --transport http \
+  --method tools/list
+```
+
+Then rerun the inventory script.
+
 ## Bootstrap safely
 
 1. Copy `terraform/terraform.tfvars.example` to a local `terraform.tfvars` and fill in the existing resource IDs.
