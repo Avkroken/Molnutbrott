@@ -53,3 +53,13 @@ Unless a concrete defect or intentional design change is established:
 - The shared Cloudflare-hosted OAuth callback is disabled.
 - DNS is a proxied CNAME to `gateway.agents.cloudflare.com`.
 - OAuth credentials remain server-side in Cloudflare and are never represented as repository secrets.
+
+## Pull request scope after opening
+
+This section clarifies any earlier wording that actionable findings should be fixed "in the same PR".
+
+- Once a PR is opened, its intended scope as described in the PR is frozen. Further commits may only complete or correct that scope.
+- If CI, Code Scanning, tests, or review find a defect caused by changes already in the PR, fix that defect on the same branch/PR. That is a correction within scope, not new scope.
+- New functionality, opportunistic refactors, cleanup, or separate improvements discovered after opening the PR must use a new short-lived branch and a new PR from current `main`; do not reuse the open PR branch for the next task.
+- Do not rush commits into a branch before or during a running CI/review cycle just to beat the checks. Make a complete change, push it, let the gates evaluate that HEAD, then respond to the result.
+- After each corrective commit, rerun relevant validation and re-verify all applicable gate/review state on the new HEAD before merge.
