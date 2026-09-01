@@ -27,9 +27,9 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 The active organization rulesets currently enforce:
 
 - pull request required;
-- 1 approval;
+- 0 required approvals;
 - stale approvals dismissed on push;
-- last-push approval required from someone other than the latest pusher;
+- last-push approval is not required;
 - review threads resolved before merge;
 - deletion and non-fast-forward/force push blocked;
 - strict required status checks;
@@ -78,8 +78,8 @@ Unless a concrete defect or intentional design change is established:
 
 Copilot Code Review and CodeRabbit are advisory rather than required status checks. Evaluate actual actionable findings. Quota, rate limits, pending state, or temporary service failure do not by themselves replace the live required gates.
 
-Review the full diff against `main` before PR. After every corrective commit, rerun relevant validation and re-check current HEAD, required checks, Code Scanning, approvals, mergeability, and review threads.
+Review the full diff against `main` before PR. After every corrective commit, rerun relevant validation and re-check current HEAD, required checks, Code Scanning, mergeability, and review threads.
 
 ## Definition of done
 
-A PR-based task is done only when the implementation is complete, the final diff is reviewed, relevant validation has passed, all actionable review feedback is handled, required checks and Code Scanning apply to exact final HEAD, the required approval exists, relevant review threads are resolved, and the PR is merged through normal ruleset enforcement or is waiting on a verified legitimate external gate.
+A PR-based task is done only when the implementation is complete, the final diff is reviewed, relevant validation has passed, all actionable review feedback is handled, required checks and Code Scanning apply to exact final HEAD, all live required gates are satisfied, relevant review threads are resolved, and the PR is merged through normal ruleset enforcement or is waiting on a verified legitimate external gate.

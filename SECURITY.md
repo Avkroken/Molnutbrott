@@ -13,9 +13,9 @@ Live organization rulesets are the enforcement source of truth for `main`. At th
 - `Terraform / required` is the repository-owned required GitHub Actions status check.
 - `scan-pr / osv-scan` is additionally required by the organization-level `main` ruleset through its current central Regelverket OSV workflow reference.
 - Required checks use strict latest-base enforcement.
-- One approval is required.
+- General required approvals are `0`.
 - Stale approvals are dismissed after a push.
-- The latest push must be approved by someone other than its author.
+- Last-push approval is not required.
 - Relevant review threads must be resolved before merge.
 - Only squash merge is allowed.
 - Deletion and non-fast-forward/force pushes are blocked.
