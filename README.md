@@ -12,6 +12,26 @@ The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and i
 - GitHub Actions validates Terraform only. It must not apply production changes.
 - OAuth grants, API tokens, Access credentials, Terraform state, and other secrets must never be committed.
 
+## Merge enforcement
+
+The default branch is `main` and is protected by the active repository ruleset `Protect main`.
+
+- Pull requests are required before changes reach `main`.
+- The required status check is `Terraform / required` from GitHub Actions.
+- Required status checks use strict latest-base enforcement, so the pull request must be tested against the current `main` before merge.
+- All relevant review threads must be resolved.
+- General required approvals are `0`; last-push approval is not required.
+- Only squash merge is allowed by the ruleset.
+- Deleting `main` and non-fast-forward/force pushes are blocked.
+- The ruleset has no bypass actors.
+- Copilot Code Review runs again on new pushes, does not review drafts, and is advisory rather than a required merge gate.
+- CodeRabbit is best effort and is not a required status check. Missing, pending, rate-limited, or unavailable CodeRabbit status does not by itself block merge. Actual CodeRabbit findings must still be evaluated and any relevant review threads must be resolved.
+- CodeQL Code Scanning merge protection is not configured because this repository currently has no verified CodeQL producer for relevant pull requests.
+- Trivy merge protection is not configured because this repository currently has no verified Trivy producer.
+- OSV/dependency scanning is not a required gate because no stable OSV/dependency check is currently produced for relevant pull requests.
+
+The live GitHub ruleset is the enforcement source of truth. Documentation must be updated if that live policy changes.
+
 ## Current MCP design
 
 - Portal hostname: `mcp.denied.se`
