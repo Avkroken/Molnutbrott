@@ -20,9 +20,14 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 
 - Do not push directly to `main` except for repository bootstrap when no commit exists.
 - Use a short-lived branch and a ready pull request.
-- Prefer squash merge.
+- `main` is protected by the active `Protect main` ruleset.
+- `Terraform / required` must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
+- Resolve all relevant review threads before merge.
+- General required approvals are `0`; do not invent a human-approval gate.
+- Only squash merge is allowed by the ruleset.
+- There are no ruleset bypass actors.
+- Copilot Code Review and CodeRabbit are advisory. Evaluate actionable findings, but service quota, rate limits, pending status, or unavailability are not merge gates unless the live ruleset changes.
 - Do not delete branches without explicit approval.
-- Resolve review threads before merge.
 
 ## Terraform workflow
 

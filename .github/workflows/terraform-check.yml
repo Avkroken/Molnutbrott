@@ -20,16 +20,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
+      - name: Checkout exact GitHub ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 origin "${GITHUB_REF}"
+          git checkout --detach FETCH_HEAD
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
-        with:
-          terraform_version: 1.15.8
-          terraform_wrapper: false
+      - name: Install repository Terraform version
+        shell: bash
+        run: |
+          set -euo pipefail
+          terraform_version="$(cat .terraform-version)"
+          archive="terraform_${terraform_version}_linux_amd64.zip"
+          release_url="https://releases.hashicorp.com/terraform/${terraform_version}"
+          curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 \
+            --output "${archive}" "${release_url}/${archive}"
+          curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 \
+            --output SHA256SUMS "${release_url}/terraform_${terraform_version}_SHA256SUMS"
+          checksum_line="$(awk -v archive="${archive}" '$2 == archive { print; exit }' SHA256SUMS)"
+          test -n "${checksum_line}"
+          printf '%s\n' "${checksum_line}" | sha256sum --check --strict -
+          unzip -q "${archive}" -d "${RUNNER_TEMP}/terraform-bin"
+          echo "${RUNNER_TEMP}/terraform-bin" >> "${GITHUB_PATH}"
 
       - name: Format check
         run: terraform -chdir=terraform fmt -check -recursive
