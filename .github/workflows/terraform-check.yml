@@ -40,7 +40,9 @@ jobs:
             --output "${archive}" "${release_url}/${archive}"
           curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 \
             --output SHA256SUMS "${release_url}/terraform_${terraform_version}_SHA256SUMS"
-          grep " ${archive}$" SHA256SUMS | sha256sum --check --strict -
+          checksum_line="$(awk -v archive="${archive}" '$2 == archive { print; exit }' SHA256SUMS)"
+          test -n "${checksum_line}"
+          printf '%s\n' "${checksum_line}" | sha256sum --check --strict -
           unzip -q "${archive}" -d "${RUNNER_TEMP}/terraform-bin"
           echo "${RUNNER_TEMP}/terraform-bin" >> "${GITHUB_PATH}"
 
