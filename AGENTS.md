@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file is authoritative for work in this repository. Read `SKILLS.md` as well.
+This file is authoritative for work in this repository. Read `SKILLS.md` as well. Live GitHub configuration is enforcement truth when documentation and actual policy differ.
 
 ## Purpose
 
@@ -14,21 +14,32 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 - Do not replace, destroy, baseline, or recreate live resources on assumptions.
 - Use `prevent_destroy` for production MCP resources unless there is a reviewed reason not to.
 - Cloudflare is the runtime and production control plane. GitHub Actions is validation only; no production `terraform apply` from CI.
-- Dashboard-only configuration should be moved into code when the provider/API supports it and the exact live state has been verified.
+- Dashboard-only configuration should be moved into code only when the provider/API supports it and exact live state has been verified.
 
-## Git workflow
+## Git workflow and live merge policy
 
-- Do not push directly to `main` except for repository bootstrap when no commit exists.
-- Use a short-lived branch and a ready pull request.
-- `main` is protected by the active `Protect main` ruleset.
-- `Terraform / required` must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
-- CodeQL Code Scanning merge protection is required for tool `CodeQL`; `security_alerts_threshold` is `medium_or_higher` and `alerts_threshold` is `errors_and_warnings`.
-- Resolve all relevant review threads before merge.
-- General required approvals are `0`; do not invent a human-approval gate.
-- Only squash merge is allowed by the ruleset.
-- There are no ruleset bypass actors.
-- Copilot Code Review and CodeRabbit are advisory. Evaluate actionable findings, but service quota, rate limits, pending status, or unavailability are not merge gates unless the live ruleset changes.
-- Do not delete branches without explicit approval.
+- Do not push directly to `main`.
+- Use a short-lived branch and a ready pull request to `main`.
+- Squash is the only allowed merge method.
+- Do not bypass rulesets, required checks, reviews, or thread resolution.
+- Re-verify exact PR HEAD after every push.
+
+The active organization rulesets currently enforce:
+
+- pull request required;
+- 1 approval;
+- stale approvals dismissed on push;
+- last-push approval required from someone other than the latest pusher;
+- review threads resolved before merge;
+- deletion and non-fast-forward/force push blocked;
+- strict required status checks;
+- `Terraform / required` through the org `terraform` ruleset;
+- `scan-pr / osv-scan` and CodeQL merge protection through the org `main` ruleset;
+- no bypass actors.
+
+The org `main` ruleset currently also invokes Regelverket's `.github/workflows/osv-scanner.yml` as a central required workflow. That is external organization-level state and must be removed separately to complete the repo-specific target architecture.
+
+Molnutbrott does not add a repository-local OSV workflow merely to reproduce that context: OSV-Scanner does not treat Terraform provider lockfiles as a supported dependency manifest, so such a workflow would not provide meaningful repository-specific dependency scanning. Terraform validation remains this repository's substantive local gate.
 
 ## Terraform workflow
 
@@ -54,12 +65,21 @@ Unless a concrete defect or intentional design change is established:
 - DNS is a proxied CNAME to `gateway.agents.cloudflare.com`.
 - OAuth credentials remain server-side in Cloudflare and are never represented as repository secrets.
 
-## Pull request scope after opening
+## GitHub Actions
 
-This section clarifies any earlier wording that actionable findings should be fixed "in the same PR".
+- `.github/workflows/terraform-check.yml` is the only repository-owned workflow and produces `Terraform / required`.
+- It checks out the exact GitHub ref, installs the version in `.terraform-version` with checksum verification, then runs formatting, backendless init, and validate.
+- CI must not receive Cloudflare production credentials.
+- CI must not run authenticated live `terraform plan` or `terraform apply`.
+- GitHub Actions must not create/update branches or PRs, arm auto-merge, or implement cross-repository remediation.
+- Pin third-party Actions to full commit SHAs when used.
 
-- Once a PR is opened, its intended scope as described in the PR is frozen. Further commits may only complete or correct that scope.
-- If CI, Code Scanning, tests, or review find a defect caused by changes already in the PR, fix that defect on the same branch/PR. That is a correction within scope, not new scope.
-- New functionality, opportunistic refactors, cleanup, or separate improvements discovered after opening the PR must use a new short-lived branch and a new PR from current `main`; do not reuse the open PR branch for the next task.
-- Do not rush commits into a branch before or during a running CI/review cycle just to beat the checks. Make a complete change, push it, let the gates evaluate that HEAD, then respond to the result.
-- After each corrective commit, rerun relevant validation and re-verify all applicable gate/review state on the new HEAD before merge.
+## Review and verification
+
+Copilot Code Review and CodeRabbit are advisory rather than required status checks. Evaluate actual actionable findings. Quota, rate limits, pending state, or temporary service failure do not by themselves replace the live required gates.
+
+Review the full diff against `main` before PR. After every corrective commit, rerun relevant validation and re-check current HEAD, required checks, Code Scanning, approvals, mergeability, and review threads.
+
+## Definition of done
+
+A PR-based task is done only when the implementation is complete, the final diff is reviewed, relevant validation has passed, all actionable review feedback is handled, required checks and Code Scanning apply to exact final HEAD, the required approval exists, relevant review threads are resolved, and the PR is merged through normal ruleset enforcement or is waiting on a verified legitimate external gate.
