@@ -18,7 +18,7 @@ The active `Protect main` ruleset protects the default branch.
 - Deletion and non-fast-forward/force pushes are blocked.
 - There are no bypass actors.
 
-GitHub CodeQL Default Setup scans GitHub Actions and uploads Code Scanning results under tool name `CodeQL`. The active ruleset requires CodeQL Code Scanning merge protection with security alerts at `medium_or_higher` and code-scanning alerts at `errors_and_warnings`.
+GitHub CodeQL Default Setup runs CodeQL analysis in GitHub Actions for GitHub Actions workflow files and uploads Code Scanning results under tool name `CodeQL`. The active ruleset enforces these results through a separate Code Scanning merge protection rule, not as a required status check, with `security_alerts_threshold` set to `medium_or_higher` and `alerts_threshold` set to `errors_and_warnings`.
 
 Trivy is not currently configured as a producer or merge gate, so no Trivy severity threshold applies today.
 
