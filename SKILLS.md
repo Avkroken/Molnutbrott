@@ -36,12 +36,12 @@ The script may only invoke discovered Cloudflare `GET` tools through `portal_cod
 
 ## CI
 
-`.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is named `Terraform / required` and is the only required status check in the active `Protect main` ruleset.
+`.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is `Terraform / required`.
 
-The ruleset uses strict required-status-check enforcement, so a pull request must be tested against the current `main` before merge. The workflow has no path filter, so the required context is created for every pull request targeting `main`.
+The workflow has no PR path filter because the required context must be emitted for every PR targeting `main`. It installs the Terraform version recorded in `.terraform-version` with checksum verification and runs formatting, backendless initialization, and validation.
 
-The job checks out the exact GitHub ref, installs the Terraform version recorded in `.terraform-version` with checksum verification, then runs formatting, initialization without a backend, and validation.
+CI must not receive Cloudflare production credentials and must not run authenticated live plans or `terraform apply`.
 
-CI must not receive Cloudflare production credentials and must not run `terraform plan` against live state or `terraform apply`.
+OSV-Scanner is not added locally because Terraform provider lockfiles are not a supported dependency manifest for meaningful OSV scanning. The organization currently supplies `scan-pr / osv-scan` through a central required workflow; that is external policy, not repository-owned CI, and must be changed at organization level if the central OSV architecture is removed.
 
-CodeRabbit and Copilot Code Review are advisory review signals, not required status checks. Actionable findings still need to be evaluated and relevant review threads must be resolved before merge.
+CodeRabbit and Copilot Code Review are advisory review signals, not required status checks. Actionable findings still need to be evaluated and relevant review threads resolved before merge.

@@ -8,28 +8,27 @@ Existing production resources must be inventoried and imported before Terraform 
 
 ## Merge security enforcement
 
-The active `Protect main` ruleset protects the default branch.
+Live organization rulesets are the enforcement source of truth for `main`. At the latest verification:
 
-- `Terraform / required` is the required GitHub Actions status check.
+- `Terraform / required` is the repository-owned required GitHub Actions status check.
+- `scan-pr / osv-scan` is additionally required by the organization-level `main` ruleset through its current central Regelverket OSV workflow reference.
 - Required checks use strict latest-base enforcement.
+- General required approvals are `0`.
+- Stale approvals are dismissed after a push.
+- Last-push approval is not required.
 - Relevant review threads must be resolved before merge.
-- Required general approvals are `0` and last-push approval is disabled.
 - Only squash merge is allowed.
 - Deletion and non-fast-forward/force pushes are blocked.
 - There are no bypass actors.
-- GitHub CodeQL Default Setup runs CodeQL analysis in GitHub Actions for GitHub Actions workflow files and uploads Code Scanning results under tool name `CodeQL`. The active ruleset enforces these results through a separate Code Scanning merge protection rule, not as a required status check, with `security_alerts_threshold` set to `medium_or_higher` and `alerts_threshold` set to `errors_and_warnings`.
+- CodeQL is enforced separately through Code Scanning merge protection with `security_alerts_threshold: medium_or_higher` and `alerts_threshold: errors_and_warnings`.
 
-Trivy is not currently configured as a producer or merge gate, so no Trivy severity threshold applies today.
+Trivy is not currently configured as a producer or merge gate, so no Trivy severity threshold applies.
 
-OSV or another dependency scanner is not currently a required merge gate because no stable dependency-scanning context is produced for relevant pull requests.
-
-If any scanner is introduced or changed, its actual check or Code Scanning tool name and enforcement thresholds must be verified live before documentation or rulesets claim that it blocks merge.
+Molnutbrott intentionally has no repository-local OSV workflow because Terraform provider lockfiles do not provide a meaningful supported OSV dependency manifest. The current `scan-pr / osv-scan` requirement is inherited central organization state and must be removed at organization level to complete the repository-specific architecture; repository CI must not fabricate a local scanner merely to satisfy that coupling.
 
 ## Automated review
 
-CodeRabbit is best effort and is not a required status check. Missing, pending, rate-limited, or unavailable CodeRabbit status does not by itself block merge. Actual findings must still be evaluated, and relevant review threads must be resolved.
-
-Copilot Code Review is advisory. Review-on-push is enabled and draft pull requests are excluded. Copilot quota or service availability is not a hard merge gate, but actionable feedback must still be evaluated.
+CodeRabbit and Copilot Code Review are advisory and not required status checks. Missing, pending, rate-limited, quota-limited, or unavailable review does not by itself replace the enforced gates. Actual relevant findings must still be evaluated, and relevant review threads must be resolved.
 
 ## Reporting sensitive findings
 

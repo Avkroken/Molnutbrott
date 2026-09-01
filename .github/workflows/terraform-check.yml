@@ -20,14 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout exact GitHub ref
-        shell: bash
-        run: |
-          set -euo pipefail
-          git init .
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 origin "${GITHUB_REF}"
-          git checkout --detach FETCH_HEAD
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install repository Terraform version
         shell: bash
@@ -46,11 +41,10 @@ jobs:
           unzip -q "${archive}" -d "${RUNNER_TEMP}/terraform-bin"
           echo "${RUNNER_TEMP}/terraform-bin" >> "${GITHUB_PATH}"
 
-      - name: Format check
-        run: terraform -chdir=terraform fmt -check -recursive
-
-      - name: Initialize without backend
-        run: terraform -chdir=terraform init -backend=false -input=false
-
-      - name: Validate
-        run: terraform -chdir=terraform validate
+      - name: Verify Terraform
+        shell: bash
+        run: |
+          set -euo pipefail
+          terraform -chdir=terraform fmt -check -recursive
+          terraform -chdir=terraform init -backend=false -input=false
+          terraform -chdir=terraform validate
