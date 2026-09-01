@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WORKER_NAME="${1:-skvallerbyttan}"
+WORKER_NAME="${1:-}"
 ZONE_NAME="${2:-denied.se}"
 MCP_URL="${MCP_URL:-https://mcp.denied.se/mcp}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT_DIR="${OUT_DIR:-inventory/${WORKER_NAME}-${STAMP}}"
+
+if [[ -z "$WORKER_NAME" ]]; then
+  echo "Usage: $0 <worker-name> [zone-name]" >&2
+  exit 64
+fi
 
 for bin in npx jq; do
   if ! command -v "$bin" >/dev/null 2>&1; then
