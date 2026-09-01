@@ -36,11 +36,13 @@ The script may only invoke discovered Cloudflare `GET` tools through `portal_cod
 
 ## CI
 
-`.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is named `Terraform / required` and is the only required status check in the active `Protect main` ruleset.
+`.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is named `Terraform / required` and remains Molnutbrott's repository-specific required status check.
 
-The ruleset uses strict required-status-check enforcement, so a pull request must be tested against the current `main` before merge. The workflow has no path filter, so the required context is created for every pull request targeting `main`.
+`.github/workflows/osv-scanner.yml` provides the shared organization OSV context. On pull requests it calls Google's pinned reusable OSV workflow and reports `scan-pr / osv-scan`; pushes, scheduled runs, and manual runs perform the corresponding main-branch scan. OSV-Scanner does not currently treat Terraform lockfiles as a supported dependency manifest, so this check provides organization-level consistency while Terraform validation remains the substantive repository-specific gate.
 
-The job checks out the exact GitHub ref, installs the Terraform version recorded in `.terraform-version` with checksum verification, then runs formatting, initialization without a backend, and validation.
+Required status checks use strict latest-base enforcement, so a pull request must be tested against the current `main` before merge. The required workflows have no PR path filter, so their contexts are created for every pull request targeting `main`.
+
+The Terraform job checks out the exact GitHub ref, installs the Terraform version recorded in `.terraform-version` with checksum verification, then runs formatting, initialization without a backend, and validation.
 
 CI must not receive Cloudflare production credentials and must not run `terraform plan` against live state or `terraform apply`.
 
