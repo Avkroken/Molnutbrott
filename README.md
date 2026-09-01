@@ -26,7 +26,7 @@ The default branch is `main` and is protected by the active repository ruleset `
 - The ruleset has no bypass actors.
 - Copilot Code Review runs again on new pushes, does not review drafts, and is advisory rather than a required merge gate.
 - CodeRabbit is best effort and is not a required status check. Missing, pending, rate-limited, or unavailable CodeRabbit status does not by itself block merge. Actual CodeRabbit findings must still be evaluated and any relevant review threads must be resolved.
-- CodeQL Code Scanning merge protection is not configured because this repository currently has no verified CodeQL producer for relevant pull requests.
+- GitHub CodeQL Default Setup scans GitHub Actions and uploads Code Scanning results under tool name `CodeQL`. The ruleset requires CodeQL merge protection with security alerts at `medium_or_higher` and code-scanning alerts at `errors_and_warnings`.
 - Trivy merge protection is not configured because this repository currently has no verified Trivy producer.
 - OSV/dependency scanning is not a required gate because no stable OSV/dependency check is currently produced for relevant pull requests.
 
