@@ -20,14 +20,15 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 
 - Do not push directly to `main` except for repository bootstrap when no commit exists.
 - Use a short-lived branch and a ready pull request.
-- `main` is protected by the active `Protect main` ruleset.
-- `Terraform / required` must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
+- `main` is protected by the active organization and repository rulesets.
+- `scan-pr / osv-scan` is the shared organization-level OSV status context; Molnutbrott emits it through the official OSV-Scanner reusable pull-request workflow.
+- `Terraform / required` remains Molnutbrott's repository-specific validation gate and must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
 - CodeQL Code Scanning merge protection is required for tool `CodeQL`; `security_alerts_threshold` is `medium_or_higher` and `alerts_threshold` is `errors_and_warnings`.
 - Resolve all relevant review threads before merge.
 - General required approvals are `0`; do not invent a human-approval gate.
-- Only squash merge is allowed by the ruleset.
+- Only squash merge is allowed by the repository ruleset.
 - There are no ruleset bypass actors.
-- Copilot Code Review and CodeRabbit are advisory. Evaluate actionable findings, but service quota, rate limits, pending status, or unavailability are not merge gates unless the live ruleset changes.
+- Copilot Code Review and CodeRabbit are advisory. Evaluate actionable findings, but service quota, rate limits, pending status, or unavailability are not merge gates unless the live rulesets change.
 - Do not delete branches without explicit approval.
 
 ## Terraform workflow
