@@ -26,10 +26,10 @@ Typical imports for the current MCP resources are documented in `README.md`.
 
 ## Read-only MCP inventory
 
-Run a sanitized live inventory through `mcp.denied.se` with:
+Run a sanitized live inventory through `mcp.denied.se` and pass the target Worker name explicitly:
 
 ```sh
-bash scripts/cloudflare-inventory.sh skvallerbyttan denied.se
+bash scripts/cloudflare-inventory.sh worker-name denied.se
 ```
 
 The script may only invoke discovered Cloudflare `GET` tools through `portal_codemode_execute`. Generated inventory belongs under ignored `inventory/`; do not commit it. Review any `error` or `skipped` entries before drawing conclusions about live state.
