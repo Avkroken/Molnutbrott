@@ -36,4 +36,12 @@ The script may only invoke discovered Cloudflare `GET` tools through `portal_cod
 
 ## CI
 
-`.github/workflows/terraform-check.yml` runs formatting, initialization without a backend, and validation. CI must not receive Cloudflare production credentials and must not run `terraform plan` against live state or `terraform apply`.
+`.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is named `Terraform / required` and is the only required status check in the active `Protect main` ruleset.
+
+The ruleset uses strict required-status-check enforcement, so a pull request must be tested against the current `main` before merge. The workflow has no path filter, so the required context is created for every pull request targeting `main`.
+
+The job checks out the exact GitHub ref, installs the Terraform version recorded in `.terraform-version` with checksum verification, then runs formatting, initialization without a backend, and validation.
+
+CI must not receive Cloudflare production credentials and must not run `terraform plan` against live state or `terraform apply`.
+
+CodeRabbit and Copilot Code Review are advisory review signals, not required status checks. Actionable findings still need to be evaluated and relevant review threads must be resolved before merge.
