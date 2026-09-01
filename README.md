@@ -56,10 +56,10 @@ Requirements:
 - `jq`
 - a previously authorized Inspector OAuth session for `https://mcp.denied.se/mcp`
 
-Inventory Skvallerbyttan:
+Inventory a Worker by passing its name explicitly:
 
 ```sh
-bash scripts/cloudflare-inventory.sh skvallerbyttan denied.se
+bash scripts/cloudflare-inventory.sh worker-name denied.se
 ```
 
 The script writes sanitized JSON under `inventory/`, which is ignored by Git. It inventories the target Worker plus Worker settings/bindings, workers.dev and preview status, cron schedules, deployments, custom domains/routes, Workers Builds triggers/history, and account-level D1/KV/R2/Queues metadata. Secret-like values are redacted before the review files are written.
