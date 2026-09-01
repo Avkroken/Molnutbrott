@@ -21,7 +21,7 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 - Do not push directly to `main` except for repository bootstrap when no commit exists.
 - Use a short-lived branch and a ready pull request.
 - `main` is protected by the active `Protect main` ruleset.
-- `Terraform / required` must pass for the current pull-request HEAD and the branch must be up to date with `main`.
+- `Terraform / required` must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
 - Resolve all relevant review threads before merge.
 - General required approvals are `0`; do not invent a human-approval gate.
 - Only squash merge is allowed by the ruleset.
