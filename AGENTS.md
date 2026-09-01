@@ -22,6 +22,7 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 - Use a short-lived branch and a ready pull request.
 - `main` is protected by the active `Protect main` ruleset.
 - `Terraform / required` must pass for GitHub's current pull-request merge ref, which combines the current PR changes with the current `main`.
+- CodeQL Code Scanning merge protection is required for tool `CodeQL`; security alerts at medium or higher and code-scanning warnings or errors block merge.
 - Resolve all relevant review threads before merge.
 - General required approvals are `0`; do not invent a human-approval gate.
 - Only squash merge is allowed by the ruleset.
