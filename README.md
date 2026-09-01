@@ -14,23 +14,24 @@ The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and i
 
 ## Merge enforcement
 
-The default branch is `main` and is protected by the active repository ruleset `Protect main`.
+Live organization rulesets are the enforcement source of truth for `main`. At the latest verification:
 
 - Pull requests are required before changes reach `main`.
-- The required status check is `Terraform / required` from GitHub Actions.
+- `Terraform / required` is the repository-owned required status check.
+- `scan-pr / osv-scan` is also required by the organization-level `main` ruleset through its current central Regelverket OSV workflow reference.
 - Required status checks use strict latest-base enforcement, so the pull request must be tested against the current `main` before merge.
+- One approval is required.
+- Stale approvals are dismissed after a push.
+- The latest push must be approved by someone other than its author.
 - All relevant review threads must be resolved.
-- General required approvals are `0`; last-push approval is not required.
-- Only squash merge is allowed by the ruleset.
+- Only squash merge is allowed.
 - Deleting `main` and non-fast-forward/force pushes are blocked.
-- The ruleset has no bypass actors.
-- Copilot Code Review runs again on new pushes, does not review drafts, and is advisory rather than a required merge gate.
-- CodeRabbit is best effort and is not a required status check. Missing, pending, rate-limited, or unavailable CodeRabbit status does not by itself block merge. Actual CodeRabbit findings must still be evaluated and any relevant review threads must be resolved.
-- GitHub CodeQL Default Setup runs CodeQL analysis in GitHub Actions for GitHub Actions workflow files and uploads Code Scanning results under tool name `CodeQL`. The ruleset enforces these results through a separate Code Scanning merge protection rule, not as a required status check, with `security_alerts_threshold` set to `medium_or_higher` and `alerts_threshold` set to `errors_and_warnings`.
-- Trivy merge protection is not configured because this repository currently has no verified Trivy producer.
-- OSV/dependency scanning is not a required gate because no stable OSV/dependency check is currently produced for relevant pull requests.
+- The rulesets have no bypass actors.
+- Copilot Code Review and CodeRabbit are advisory rather than required status checks. Their quota, rate-limit, pending, or unavailable state does not by itself replace the enforced gates; actual relevant findings still need evaluation.
+- CodeQL is enforced through Code Scanning merge protection with `security_alerts_threshold: medium_or_higher` and `alerts_threshold: errors_and_warnings`.
+- Trivy merge protection is not configured because this repository has no verified Trivy producer.
 
-The live GitHub ruleset is the enforcement source of truth. Documentation must be updated if that live policy changes.
+Molnutbrott intentionally does not add a repository-local OSV workflow merely to reproduce the organization context: Terraform provider lockfiles are not a meaningful supported OSV dependency manifest. The remaining central `scan-pr / osv-scan` requirement is organization-level coupling and must be removed there to complete the repository-specific target architecture.
 
 ## Current MCP design
 
