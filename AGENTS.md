@@ -52,6 +52,10 @@ Before proposing infrastructure changes:
 5. Run an authenticated `terraform plan` locally when live-state comparison is required.
 6. Treat any unexpected replacement/destruction as a blocker until explained from verified state.
 
+## Dependency versions
+
+Prefer the newest stable release by default. Do not add an upper version bound or exact pin merely to avoid future upgrades. A pin or upper bound is an exception for a demonstrated incompatibility and must document why it exists and what condition allows its removal.
+
 ## MCP invariants
 
 Unless a concrete defect or intentional design change is established:
@@ -68,12 +72,12 @@ Unless a concrete defect or intentional design change is established:
 ## GitHub Actions
 
 - `.github/workflows/terraform-check.yml` is the only repository-owned workflow and produces `Terraform / required`.
-- It checks out the exact GitHub ref, resolves the newest stable Terraform release allowed by the `required_version` major range in `terraform/versions.tf`, verifies HashiCorp's published checksum, then runs formatting, backendless init, and validate.
-- `.terraform-version` is intentionally not used; routine Terraform 1.x releases must not require repository maintenance.
+- It checks out the exact GitHub ref, resolves the newest stable Terraform release from HashiCorp's release index, verifies HashiCorp's published checksum, then runs formatting, backendless init, and validate.
+- `.terraform-version` is intentionally not used; routine Terraform releases, including future major releases accepted by `required_version`, must not require repository maintenance.
 - CI must not receive Cloudflare production credentials.
 - CI must not run authenticated live `terraform plan` or `terraform apply`.
 - GitHub Actions must not create/update branches or PRs, arm auto-merge, or implement cross-repository remediation.
-- Pin third-party Actions to full commit SHAs when used.
+- Pin third-party Actions to full commit SHAs when used; Dependabot is responsible for advancing those immutable references.
 
 ## Review and verification
 
