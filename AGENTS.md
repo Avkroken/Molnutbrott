@@ -89,12 +89,14 @@ Repository-owned workflows are limited to these explicit responsibilities:
 
 The repository owner explicitly approved metadata-only issue triage via GitHub Agentic Workflows.
 
-- The caller may trigger only for opened/reopened issues and must call the SHA-pinned central `issue-classification.lock.yml`.
+- The caller may trigger only for opened/reopened issues, call the SHA-pinned central `issue-classification.lock.yml`, and after successful classification call the SHA-pinned deterministic metadata routing workflow.
 - The AI portion may read the triggering issue plus read-only repository context needed to classify it.
-- Safe outputs may add exactly one `difficulty:*` label and exactly one `security:*` label from the central allowlist.
+- Safe outputs may add exactly one temporary `classification:<difficulty>:<security>` label from the central allowlist. Deterministic routing converts it to canonical `difficulty:*` and `security:*` labels and removes the temporary label.
+- Existing canonical classification labels take precedence over AI output. Malformed or conflicting classification metadata must fail closed to `triage:invalid`.
+- The caller may explicitly map only `COPILOT_GITHUB_TOKEN` to the AI workflow; `secrets: inherit` is prohibited.
 - The workflow must not comment, assign users or coding agents, create/update branches or pull requests, edit/close issues, perform review, merge, deploy, change Cloudflare state, or propose/perform remediation.
 - Copilot authentication may use organization billing or the GitHub Actions secret `COPILOT_GITHUB_TOKEN`. Credential values must never be committed, logged, or copied into documentation.
-- The deterministic metadata caller may assign `blixten85` and maintain `agent:*`, `priority:*`, and `triage:*` labels only.
+- The deterministic metadata caller may assign `blixten85` and maintain canonical classification, `agent:*`, `priority:*`, and `triage:*` labels only.
 
 This exception does not relax any infrastructure, credential, remediation, review, branch/PR mutation, or deployment rule.
 
