@@ -13,7 +13,7 @@ Molnutbrott versions Cloudflare infrastructure for Avkroken. The initial scope i
 - Never invent resource IDs, authentication settings, Access policies, or live Cloudflare state.
 - Do not replace, destroy, baseline, or recreate live resources on assumptions.
 - Use `prevent_destroy` for production MCP resources unless there is a reviewed reason not to.
-- Cloudflare is the runtime and production control plane. GitHub Actions is validation only; no production `terraform apply` from CI.
+- Cloudflare is the runtime and production control plane. GitHub Actions is validation plus the narrow metadata-only automation described below; no production `terraform apply` from CI.
 - Dashboard-only configuration should be moved into code only when the provider/API supports it and exact live state has been verified.
 
 ## Git workflow and live merge policy
@@ -71,13 +71,32 @@ Unless a concrete defect or intentional design change is established:
 
 ## GitHub Actions
 
-- `.github/workflows/terraform-check.yml` is the only repository-owned workflow and produces `Terraform / required`.
-- It checks out the exact GitHub ref, resolves the newest stable Terraform release from HashiCorp's release index, verifies HashiCorp's published checksum, then runs formatting, backendless init, and validate.
+Repository-owned workflows are limited to these explicit responsibilities:
+
+- `.github/workflows/terraform-check.yml` produces `Terraform / required` and validates Terraform only.
+- `.github/workflows/metadata-routing.yml` is a thin caller to Avkroken's central deterministic metadata routing and may only manage issue/PR assignee and labels.
+- `.github/workflows/issue-classification.yml` is a thin caller to Avkroken's central metadata-only Agentic Workflow for issue classification.
+
+`terraform-check.yml` checks out the exact GitHub ref, resolves the newest stable Terraform release from HashiCorp's release index, verifies HashiCorp's published checksum, then runs formatting, backendless init, and validate.
+
 - `.terraform-version` is intentionally not used; routine Terraform releases, including future major releases accepted by `required_version`, must not require repository maintenance.
 - CI must not receive Cloudflare production credentials.
 - CI must not run authenticated live `terraform plan` or `terraform apply`.
-- GitHub Actions must not create/update branches or PRs, arm auto-merge, or implement cross-repository remediation.
+- GitHub Actions must not create/update branches or PRs, arm auto-merge, or implement cross-repository remediation. Metadata-only assignee/label changes through the two approved callers above are the sole exception and may not alter branch, review, or merge state.
 - Pin third-party Actions to full commit SHAs when used; Dependabot is responsible for advancing those immutable references.
+
+## Metadata-only AI triage exception
+
+The repository owner explicitly approved metadata-only issue triage via GitHub Agentic Workflows.
+
+- The caller may trigger only for opened/reopened issues and must call the SHA-pinned central `issue-classification.lock.yml`.
+- The AI portion may read the triggering issue plus read-only repository context needed to classify it.
+- Safe outputs may add exactly one `difficulty:*` label and exactly one `security:*` label from the central allowlist.
+- The workflow must not comment, assign users or coding agents, create/update branches or pull requests, edit/close issues, perform review, merge, deploy, change Cloudflare state, or propose/perform remediation.
+- Copilot authentication may use organization billing or the GitHub Actions secret `COPILOT_GITHUB_TOKEN`. Credential values must never be committed, logged, or copied into documentation.
+- The deterministic metadata caller may assign `blixten85` and maintain `agent:*`, `priority:*`, and `triage:*` labels only.
+
+This exception does not relax any infrastructure, credential, remediation, review, branch/PR mutation, or deployment rule.
 
 ## Review and verification
 
