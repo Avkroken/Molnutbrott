@@ -38,7 +38,7 @@ The script may only invoke discovered Cloudflare `GET` tools through `portal_cod
 
 `.github/workflows/terraform-check.yml` runs on pull requests to `main`, pushes to `main`, and manual dispatch. Its terminal job is `Terraform / required`.
 
-The workflow has no PR path filter because the required context must be emitted for every PR targeting `main`. It reads the `required_version` major range from `terraform/versions.tf`, resolves the newest stable Terraform release in that range from HashiCorp's release index, verifies the published checksum, and runs formatting, backendless initialization, and validation. There is intentionally no `.terraform-version` pin to maintain.
+The workflow has no PR path filter because the required context must be emitted for every PR targeting `main`. It resolves the newest stable Terraform release from HashiCorp's release index, verifies the published checksum, and runs formatting, backendless initialization, and validation. `terraform/versions.tf` keeps only the minimum supported Terraform version and intentionally has no upper bound. There is no `.terraform-version` pin to maintain.
 
 CI must not receive Cloudflare production credentials and must not run authenticated live plans or `terraform apply`.
 
