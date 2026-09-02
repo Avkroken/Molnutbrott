@@ -68,7 +68,8 @@ Unless a concrete defect or intentional design change is established:
 ## GitHub Actions
 
 - `.github/workflows/terraform-check.yml` is the only repository-owned workflow and produces `Terraform / required`.
-- It checks out the exact GitHub ref, installs the version in `.terraform-version` with checksum verification, then runs formatting, backendless init, and validate.
+- It checks out the exact GitHub ref, resolves the newest stable Terraform release allowed by the `required_version` major range in `terraform/versions.tf`, verifies HashiCorp's published checksum, then runs formatting, backendless init, and validate.
+- `.terraform-version` is intentionally not used; routine Terraform 1.x releases must not require repository maintenance.
 - CI must not receive Cloudflare production credentials.
 - CI must not run authenticated live `terraform plan` or `terraform apply`.
 - GitHub Actions must not create/update branches or PRs, arm auto-merge, or implement cross-repository remediation.
