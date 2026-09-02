@@ -21,6 +21,7 @@ Live organization rulesets are the enforcement source of truth for `main`. At th
 - Deletion and non-fast-forward/force pushes are blocked.
 - There are no bypass actors.
 - CodeQL is enforced separately through Code Scanning merge protection with `security_alerts_threshold: medium_or_higher` and `alerts_threshold: errors_and_warnings`.
+- CodeQL Default Setup analyzes the repository's GitHub Actions workflows; repository-owned CI must not duplicate the CodeQL workflow.
 
 Trivy is not currently configured as a producer or merge gate, so no Trivy severity threshold applies.
 
