@@ -24,44 +24,31 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install latest compatible Terraform
+      - name: Install latest stable Terraform
         shell: bash
         run: |
           set -euo pipefail
-
-          terraform_constraint="$(
-            sed -n 's/^[[:space:]]*required_version = "\(.*\)"/\1/p' terraform/versions.tf
-          )"
-          terraform_major="$(
-            printf '%s\n' "${terraform_constraint}" \
-              | sed -nE 's/^~> ([0-9]+)\.[0-9]+$/\1/p'
-          )"
-          test -n "${terraform_major}"
 
           curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 \
             --output terraform-releases.html \
             https://releases.hashicorp.com/terraform/
 
           terraform_version="$(
-            python3 - "${terraform_major}" <<'PY'
+            python3 <<'PY'
           import re
-          import sys
 
-          major = sys.argv[1]
           with open("terraform-releases.html", encoding="utf-8") as handle:
               releases = handle.read()
 
-          pattern = re.compile(
-              rf"terraform_({re.escape(major)})\.(\d+)\.(\d+)(?![-0-9A-Za-z.])"
-          )
+          pattern = re.compile(r"terraform_(\d+)\.(\d+)\.(\d+)(?![-0-9A-Za-z.])")
           versions = {tuple(map(int, match.groups())) for match in pattern.finditer(releases)}
           if not versions:
-              raise SystemExit(f"No stable Terraform {major}.x release found")
+              raise SystemExit("No stable Terraform release found")
 
           print(".".join(map(str, max(versions))))
           PY
           )"
-          echo "Using Terraform ${terraform_version} for constraint ${terraform_constraint}"
+          echo "Using latest stable Terraform ${terraform_version}"
 
           archive="terraform_${terraform_version}_linux_amd64.zip"
           release_url="https://releases.hashicorp.com/terraform/${terraform_version}"
