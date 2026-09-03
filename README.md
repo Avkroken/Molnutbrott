@@ -1,37 +1,8 @@
 # Molnutbrott
 
-Versioned Cloudflare infrastructure for Avkroken.
+Versioned Cloudflare infrastructure for Avkroken. The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and its Cloudflare API upstream.
 
-The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and its Cloudflare API upstream.
-
-## Ownership
-
-- Cloudflare remains the runtime and production control plane.
-- Terraform is the intended source of truth for configuration that Cloudflare exposes through the provider.
-- Existing live resources must be imported before any `terraform apply`.
-- GitHub Actions validates Terraform only. It must not apply production changes.
-- OAuth grants, API tokens, Access credentials, Terraform state, and other secrets must never be committed.
-
-## Merge enforcement
-
-Live organization rulesets are the enforcement source of truth for `main`. At the latest verification:
-
-- Pull requests are required before changes reach `main`.
-- `Terraform / required` is the repository-owned required status check.
-- `scan-pr / osv-scan` is also required by the organization-level `main` ruleset through its current central Regelverket OSV workflow reference.
-- Required status checks use strict latest-base enforcement, so the pull request must be tested against the current `main` before merge.
-- General required approvals are `0`.
-- Stale approvals are dismissed after a push.
-- Last-push approval is not required.
-- All relevant review threads must be resolved.
-- Only squash merge is allowed.
-- Deleting `main` and non-fast-forward/force pushes are blocked.
-- The rulesets have no bypass actors.
-- Copilot Code Review and CodeRabbit are advisory rather than required status checks. Their quota, rate-limit, pending, or unavailable state does not by itself replace the enforced gates; actual relevant findings still need evaluation.
-- CodeQL is enforced through Code Scanning merge protection with `security_alerts_threshold: medium_or_higher` and `alerts_threshold: errors_and_warnings`.
-- Trivy merge protection is not configured because this repository has no verified Trivy producer.
-
-Molnutbrott intentionally does not add a repository-local OSV workflow merely to reproduce the organization context: Terraform provider lockfiles are not a meaningful supported OSV dependency manifest. The remaining central `scan-pr / osv-scan` requirement is organization-level coupling and must be removed there to complete the repository-specific target architecture.
+Repository-specific infrastructure, CI and safety contracts are maintained in `MOLNUTBROTT.md`. Validation commands and live-state procedures are in `SKILLS.md`.
 
 ## Current MCP design
 
