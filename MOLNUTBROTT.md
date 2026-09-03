@@ -42,23 +42,16 @@ Unless a concrete defect or intentional design change is established:
 - DNS is a proxied CNAME to `gateway.agents.cloudflare.com`;
 - OAuth credentials remain server-side in Cloudflare and are never represented as repository secrets.
 
-## GitHub Actions contract
+## GitHub Actions and merge contract
 
-- `.github/workflows/terraform-check.yml` owns the `Terraform / required` context.
-- It checks out the exact GitHub ref, resolves the newest stable Terraform release from HashiCorp's release index, verifies HashiCorp's published checksum, then runs formatting, backendless init and validate.
+- `.github/workflows/terraform-check.yml` owns the repository required status `Terraform / required`; its organization-level status ruleset uses strict latest-base verification.
+- The workflow checks out the exact GitHub ref, resolves the newest stable Terraform release from HashiCorp's release index, verifies the published checksum, then runs formatting, backendless init and validate.
 - `.terraform-version` is intentionally not used; routine Terraform releases, including future major releases accepted by `required_version`, must not require repository maintenance.
-- CI must not receive Cloudflare production credentials.
-- CI must not run authenticated live `terraform plan` or `terraform apply`.
-- Pin third-party GitHub Actions to full commit SHAs; Dependabot advances those immutable references.
-
-## Metadata-only AI triage
-
-- `.github/workflows/issue-classification.yml` may only classify opened or reopened issues through the SHA-pinned central metadata-only workflow.
-- `.github/workflows/metadata-routing.yml` may only call Avkroken's SHA-pinned deterministic metadata routing for assignee and labels.
-- The AI workflow may read the triggering issue and read-only repository context, and may add exactly one temporary `classification:<difficulty>:<security>` label from the central allowlist.
-- Deterministic routing converts the temporary label to canonical `difficulty:*` and `security:*` labels, removes the temporary label, and maintains routing metadata. Existing canonical classification labels take precedence; malformed or conflicting classification metadata must fail closed to `triage:invalid`.
-- The caller may explicitly pass only `COPILOT_GITHUB_TOKEN`; `secrets: inherit` is prohibited. Credential values must never be committed or logged.
-- The metadata-only workflows must not change code, branches, pull requests, reviews, merge state, deployments, Terraform state, or Cloudflare resources, and must not perform or propose remediation.
+- CI must not receive Cloudflare production credentials or run authenticated live `terraform plan` or `terraform apply`.
+- Third-party GitHub Actions are pinned to full commit SHAs; Dependabot advances those immutable references.
+- The organization `main` ruleset requires the central OSV workflow from `Avkroken/.github`. It runs `scan-pr` for pull requests and `scan-merge-group` for merge-queue candidates; `scan-pr / osv-scan` is not a separate organization-level required status.
+- The repository uses merge queue. Common review-thread, CodeQL, squash-only and other organization merge enforcement is owned by the active organization rulesets rather than duplicated here.
+- `.github/workflows/issue-classification.yml` and `.github/workflows/metadata-routing.yml` are repository callers for the centrally authorized metadata-only automation; permitted behavior is defined only by `Avkroken/.github/AGENTS.md`.
 
 ## Response format
 
