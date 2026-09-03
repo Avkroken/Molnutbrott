@@ -51,6 +51,15 @@ Unless a concrete defect or intentional design change is established:
 - CI must not run authenticated live `terraform plan` or `terraform apply`.
 - Pin third-party GitHub Actions to full commit SHAs; Dependabot advances those immutable references.
 
+## Metadata-only AI triage
+
+- `.github/workflows/issue-classification.yml` may only classify opened or reopened issues through the SHA-pinned central metadata-only workflow.
+- `.github/workflows/metadata-routing.yml` may only call Avkroken's SHA-pinned deterministic metadata routing for assignee and labels.
+- The AI workflow may read the triggering issue and read-only repository context, and may add exactly one temporary `classification:<difficulty>:<security>` label from the central allowlist.
+- Deterministic routing converts the temporary label to canonical `difficulty:*` and `security:*` labels, removes the temporary label, and maintains routing metadata. Existing canonical classification labels take precedence; malformed or conflicting classification metadata must fail closed to `triage:invalid`.
+- The caller may explicitly pass only `COPILOT_GITHUB_TOKEN`; `secrets: inherit` is prohibited. Credential values must never be committed or logged.
+- The metadata-only workflows must not change code, branches, pull requests, reviews, merge state, deployments, Terraform state, or Cloudflare resources, and must not perform or propose remediation.
+
 ## Response format
 
 Read and follow `SKILLS.md` when working in this repository.
