@@ -40,4 +40,4 @@ The script may only invoke discovered Cloudflare `GET` tools through `portal_cod
 
 CI must not receive Cloudflare production credentials and must not run authenticated live plans or `terraform apply`.
 
-The authoritative repository CI and merge contract is in `MOLNUTBROTT.md`; organization-wide agent policy is only in `Avkroken/.github/AGENTS.md`.
+The authoritative repository CI and merge contract is in `REPO.md`; organization-wide agent policy is only in `Avkroken/.github/AGENTS.md`.
