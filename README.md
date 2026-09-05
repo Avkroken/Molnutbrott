@@ -2,7 +2,7 @@
 
 Versioned Cloudflare infrastructure for Avkroken. The first managed surface is the MCP portal at `https://mcp.denied.se/mcp` and its Cloudflare API upstream.
 
-Repository-specific infrastructure, CI and safety contracts are maintained in `MOLNUTBROTT.md`. Validation commands and live-state procedures are in `SKILLS.md`.
+Repository-specific infrastructure, CI and safety contracts are maintained in `REPO.md`. Validation commands and live-state procedures are in `SKILLS.md`.
 
 ## Current MCP design
 
